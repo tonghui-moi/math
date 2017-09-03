@@ -6,6 +6,6 @@ Add UnitPro.java to your Java project to use the tool.
 
 Here is an example:
 
-UnitPro u = new UnitPro();
-u.parse("sin(10*x)+x");
-u.cal(10);//Assign 10 to X and do a calculation.
+	UnitPro u = new UnitPro();
+	u.parse("sin(10*x)+x");
+	u.cal(10);//Assign 10 to X and do a calculation.
