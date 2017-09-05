@@ -21,7 +21,7 @@ public class UnitPro extends Pro {
 	private final static int ln = 8;
 	private final static int abs = 9;
 	private final static int U = 10;
-	public Pro[] pro1;
+	private Pro[] pro1;
 	private Pro[] pro2;
 	private Pro[][] pro3;
 	private Pro[] pro4;
