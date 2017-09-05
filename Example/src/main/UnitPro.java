@@ -1,9 +1,15 @@
-package main;
+package com.lai.mathboard;
 
 import java.util.ArrayList;
 import java.util.List;
-
-class ExpressionErrorException extends Exception{}
+/*
+	The following operators are supported:
+	+ - * / sin cos tan ln ^ abs asin acos atan
+	If your expression contains any other characters rather than number,x,e,
+	PI,() and the above operators or the expression is wrong,you will receive an ExpressionErrorException
+*/
+class ExpressionErrorException extends Exception{
+	private static final long serialVersionUID = 1L;}
 class Pro {
 	float val;
 	int arg, type;
@@ -20,7 +26,10 @@ public class UnitPro extends Pro {
 	private final static int tan = 7;
 	private final static int ln = 8;
 	private final static int abs = 9;
-	private final static int U = 10;
+	private final static int acos = 10;
+	private final static int asin = 11;
+	private final static int atan = 12;
+	private final static int U = 13;
 	private Pro[] pro1;
 	private Pro[] pro2;
 	private Pro[][] pro3;
@@ -45,6 +54,15 @@ public class UnitPro extends Pro {
 				break;
 			case tan:
 				p.val = (float) Math.tan(((Pro) p.obj).val);
+				break;
+			case acos:
+				p.val = (float) Math.acos(((Pro) p.obj).val);
+				break;
+			case asin:
+				p.val = (float) Math.asin(((Pro) p.obj).val);
+				break;
+			case atan:
+				p.val = (float) Math.atan(((Pro) p.obj).val);
 				break;
 			case ln:
 				p.val = (float) Math.log(((Pro) p.obj).val);
@@ -87,6 +105,7 @@ public class UnitPro extends Pro {
 		return val;
 	}
 	public void parse(String str) throws ExpressionErrorException {
+		str=str.toLowerCase();
 		this.type = U;
 		List<Pro> ps1, ps2, ps4;
 		ps1 = new ArrayList<Pro>();
@@ -147,18 +166,15 @@ public class UnitPro extends Pro {
 					p.type = xnum;
 					ps1.add(p);
 					break;
-				case 'X':
-					p.type = xnum;
-					ps1.add(p);
-					break;
 				case 'e':
 					p.type = num;
 					p.val = (float) Math.E;
 					break;
-				case 'P':
+				case 'p':
+					if(cs[++i]!='i')
+						throw new ExpressionErrorException();
 					p.type = num;
 					p.val = (float) Math.PI;
-					i += 1;
 					break;
 				case 'c':
 					if(cs[++i]=='o'&&cs[++i]=='s')
@@ -185,8 +201,40 @@ public class UnitPro extends Pro {
 						throw new ExpressionErrorException();
 					break;
 				case 'a':
-					if(cs[++i]=='b'&&cs[++i]=='s')
-						p.type = abs;
+					if(cs[i+1]=='b')
+					{
+						i++;
+						if(cs[++i]=='s')
+						{
+							p.type=abs;
+						}
+						else
+							throw new ExpressionErrorException();
+					}
+					else if(cs[i+1]=='s')
+					{
+						i++;
+						if(cs[++i]=='i'&&cs[++i]=='n')
+							p.type=asin;
+						else
+							throw new ExpressionErrorException();
+					}
+					else if(cs[i+1]=='c')
+					{
+						i++;
+						if(cs[++i]=='o'&&cs[++i]=='s')
+							p.type=acos;
+						else
+							throw new ExpressionErrorException();
+					}
+					else if(cs[i+1]=='t')
+					{
+						i++;
+						if(cs[++i]=='a'&&cs[++i]=='n')
+							p.type=atan;
+						else
+							throw new ExpressionErrorException();
+					}
 					else
 						throw new ExpressionErrorException();
 					break;
@@ -214,7 +262,7 @@ public class UnitPro extends Pro {
 					throw new ExpressionErrorException();
 				}
 			}
-			if (p.type > 4 && p.type < 10)
+			if (p.type > 4 && p.type < 13)
 				ps2.add(p);
 			l.add(p);
 		}
