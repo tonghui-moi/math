@@ -142,12 +142,9 @@ public class UnitPro extends Pro {
 				if (i != cs.length)
 					i--;
 			} else if (c == '(') {
-				c = cs[++i];
 				String ss = "";
 				int j = 1;
-				while (j != 0) {
-
-					ss += c;
+				while (true) {
 					if (++i == cs.length)
 						throw new ExpressionErrorException();
 					c = cs[i];
@@ -155,6 +152,9 @@ public class UnitPro extends Pro {
 						j--;
 					else if (c == '(')
 						j++;
+					if(j==0)
+						break;
+					ss += c;
 				}
 				UnitPro n = new UnitPro();
 				n.parse(ss);
