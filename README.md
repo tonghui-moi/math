@@ -7,8 +7,8 @@
 ```java
     UnitPro u = new UnitPro();
     u.parse("sin(10*x)+x");
-    u.cal(10);//assign 10 to X and do a calculation.
-    u.cal(Math.PI);//similar to the last statement
+    u.cal(10);//给x赋值为10并计算表达式的值
+    u.cal(Math.PI);//和上面的类似
 ```
 
 # Brief Introduction
