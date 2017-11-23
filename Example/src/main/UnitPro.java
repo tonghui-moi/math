@@ -2,11 +2,11 @@ package main;
 
 import java.util.ArrayList;
 import java.util.List;
-/*
-	The following operators are supported:
-	+ - * / sin cos tan ln ^ abs asin acos atan
-	If your expression contains any other characters rather than number,x,e,
-	PI,() and the above operators or the expression is wrong,you will receive an ExpressionErrorException
+/**
+*	The following operators are supported:
+*	+ - * / sin cos tan ln ^ abs asin acos atan
+*	If the expression contains any other characters rather than number,x,e,
+*	PI,() and the above operators or the expression is wrong,this will throw an ExpressionErrorException
 */
 class ExpressionErrorException extends Exception{
 	private static final long serialVersionUID = 1L;}
@@ -15,7 +15,6 @@ class Pro {
 	int arg, type;
 	Object obj;
 }
-
 public class UnitPro extends Pro {
 	private final static int num = 0;
 	private final static int xnum = 1;
@@ -29,7 +28,6 @@ public class UnitPro extends Pro {
 	private final static int acos = 10;
 	private final static int asin = 11;
 	private final static int atan = 12;
-	private final static int U = 13;
 	private Pro[] pro1;
 	private Pro[] pro2;
 	private Pro[][] pro3;
@@ -105,8 +103,10 @@ public class UnitPro extends Pro {
 		return val;
 	}
 	public void parse(String str) throws ExpressionErrorException {
+		if(str.isEmpty())
+			throw new ExpressionErrorException();
+		this.type=num;
 		str=str.toLowerCase();
-		this.type = U;
 		List<Pro> ps1, ps2, ps4;
 		ps1 = new ArrayList<Pro>();
 		ps2 = new ArrayList<Pro>();
@@ -116,8 +116,10 @@ public class UnitPro extends Pro {
 		char[] cs = str.toCharArray();
 		char c;
 		List<Pro> l = new ArrayList<Pro>();
+		int lastType=-1,reqType=-1;
+		Pro p=null;
 		for (int i = 0; i < cs.length; i++) {
-			Pro p = new Pro();
+			p= new Pro();
 			c = cs[i];
 			if (c > 47 && c < 58) {
 				p.type = num;
@@ -265,10 +267,38 @@ public class UnitPro extends Pro {
 			if (p.type > 4 && p.type < 13)
 				ps2.add(p);
 			l.add(p);
+			if(lastType!=-1)
+			{
+				if(p.type==lastType)
+					throw new ExpressionErrorException();
+				if(reqType!=-1)
+				{
+					if(p.type<=xnum)
+					{
+						if(reqType!=0)
+							throw new ExpressionErrorException();
+						reqType=1;
+					}
+					else if(p.type<=op2)
+					{
+						if(reqType!=1)
+							throw new ExpressionErrorException();
+						reqType=-1;
+					}
+					else
+					{
+						if(reqType!=2)
+							throw new ExpressionErrorException();
+						reqType=0;
+					}	
+				}
+				lastType=p.type;
+			}
 		}
+		if(p.type>xnum)
+			throw new ExpressionErrorException();
 		int i = 0;
 		int id;
-		Pro p;
 		while (i < ps2.size()) {
 			p = ps2.get(i);
 			id = l.indexOf(p) + 1;
@@ -305,23 +335,23 @@ public class UnitPro extends Pro {
 		List<Pro[]> ps3;
 		List<Pro> temp = null;
 		ps3 = new ArrayList<Pro[]>();
-		List<Boolean> lsop = new ArrayList<Boolean>();
+		List<Boolean> ops = new ArrayList<Boolean>();
 		temp = new ArrayList<Pro>();
 		if ((next = l.get(0).type) == op1) {
-			lsop.add(l.get(0).arg == 0);
+			ops.add(l.get(0).arg == 0);
 			temp.add(l.get(1));
 			i = 0;
 		} else if (next == op2)
 			throw new ExpressionErrorException();
 		else {
-			lsop.add(true);
+			ops.add(true);
 			temp.add(l.get(0));
 		}
 		while ((i += 2) < l.size()) {
 			p = l.get(i);
 			next = p.arg;
 			if (p.type == op1) {
-				lsop.add(next == 0);
+				ops.add(next == 0);
 				ps3.add(temp.toArray(new Pro[0]));
 				temp = new ArrayList<Pro>();
 				temp.add(l.get(i + 1));
@@ -336,7 +366,7 @@ public class UnitPro extends Pro {
 		pro2 = ps2.toArray(new Pro[0]);
 		pro3 = ps3.toArray(new Pro[0][0]);
 		pro4 = ps4.toArray(new Pro[0]);
-		op = lsop.toArray(new Boolean[0]);
+		op = ops.toArray(new Boolean[0]);
 		upro = up1.toArray(new UnitPro[0]);
 		vals = new float[pro3.length];
 	}
