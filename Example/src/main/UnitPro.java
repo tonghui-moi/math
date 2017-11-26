@@ -1,4 +1,4 @@
-package main;
+package com.laitech.mathboard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,9 @@ class Pro {
 }
 public class UnitPro extends Pro {
 	private final static int num = 0;
-	private final static int xnum = 1;
-	private final static int op1 = 2;
-	private final static int op2 = 3;
+	private final static int op1 = 1;
+	private final static int op2 = 2;
+	private final static int op3 = 3;
 	private final static int cos = 5;
 	private final static int sin = 6;
 	private final static int tan = 7;
@@ -102,6 +102,14 @@ public class UnitPro extends Pro {
 		this.val = temp;
 		return val;
 	}
+	private int getType(int t)
+    {
+        if(t==num)
+            return 0;
+        if(t<=op3)
+            return 1;
+        return 2;
+    }
 	public void parse(String str) throws ExpressionErrorException {
 		if(str.isEmpty())
 			throw new ExpressionErrorException();
@@ -116,7 +124,7 @@ public class UnitPro extends Pro {
 		char[] cs = str.toCharArray();
 		char c;
 		List<Pro> l = new ArrayList<Pro>();
-		int lastType=-1,reqType=-1;
+		int lastType=-1,reqType=-1,type;
 		Pro p=null;
 		for (int i = 0; i < cs.length; i++) {
 			p= new Pro();
@@ -165,7 +173,7 @@ public class UnitPro extends Pro {
 			} else {
 				switch (c) {
 				case 'x':
-					p.type = xnum;
+					p.type = num;
 					ps1.add(p);
 					break;
 				case 'e':
@@ -257,7 +265,7 @@ public class UnitPro extends Pro {
 					p.arg = 3;
 					break;
 				case '^':
-					p.type = num;
+					p.type = op3;
 					ps4.add(p);
 					break;
 				default:
@@ -267,35 +275,31 @@ public class UnitPro extends Pro {
 			if (p.type > 4 && p.type < 13)
 				ps2.add(p);
 			l.add(p);
-			if(lastType!=-1)
-			{
-				if(p.type==lastType)
-					throw new ExpressionErrorException();
-				if(reqType!=-1)
-				{
-					if(p.type<=xnum)
-					{
-						if(reqType!=0)
-							throw new ExpressionErrorException();
-						reqType=1;
-					}
-					else if(p.type<=op2)
-					{
-						if(reqType!=1)
-							throw new ExpressionErrorException();
-						reqType=-1;
-					}
-					else
-					{
-						if(reqType!=2)
-							throw new ExpressionErrorException();
-						reqType=0;
-					}	
-				}
-				lastType=p.type;
-			}
+
+			type=getType(p.type);
+            if(lastType!=-1&&type==lastType)
+                throw new ExpressionErrorException();
+            lastType=type;
+            if(type==0)
+            {
+                if(reqType!=-1&&reqType!=0)
+                    throw new ExpressionErrorException();
+                reqType=1;
+            }
+            else if(type==1)
+            {
+                if(reqType!=-1&&reqType!=1)
+                    throw new ExpressionErrorException();
+                reqType=-1;
+            }
+            else
+            {
+                if(reqType!=-1&&reqType!=2)
+                    throw new ExpressionErrorException();
+                reqType=0;
+            }
 		}
-		if(p.type>xnum)
+		if(p.type!=num)
 			throw new ExpressionErrorException();
 		int i = 0;
 		int id;
